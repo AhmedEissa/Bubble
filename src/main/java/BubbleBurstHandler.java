@@ -14,9 +14,9 @@ import javafx.scene.shape.Circle;
  */
 public class BubbleBurstHandler implements EventHandler<MouseEvent> {
     private BubbleFrame bubbleFrame = null;
-    private GridPane bubble = null;
+    private PaneControl bubble = null;
 
-    public BubbleBurstHandler(BubbleFrame bubbleFrame, GridPane bubble) {
+    public BubbleBurstHandler(BubbleFrame bubbleFrame, PaneControl bubble) {
         this.bubbleFrame = bubbleFrame;
         this.bubble = bubble;
     }
@@ -24,9 +24,10 @@ public class BubbleBurstHandler implements EventHandler<MouseEvent> {
     @Override
     public void handle(MouseEvent mouseEvent) {
         if (mouseEvent.getClickCount() > 0) {
-            bubbleFrame.burstTheBubble(bubble);
+            bubbleFrame.enlarge(bubble);
+            //bubbleFrame.burstTheBubble(bubble);
         } else if (mouseEvent.getEventType().equals(MouseEvent.MOUSE_ENTERED)) {
-            bubble.setCursor(Cursor.CLOSED_HAND);
+            bubble.getPanel().setCursor(Cursor.CLOSED_HAND);
         }
     }
 }

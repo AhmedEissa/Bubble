@@ -1,19 +1,16 @@
-import javafx.application.Platform;
+
 import javafx.geometry.Insets;
-import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import twitter4j.*;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -29,7 +26,7 @@ import java.util.Random;
  */
 public class BubbleFrame {
     private Group group = null;
-    private List<GridPane> bubbles = new ArrayList<>();
+    private List<PaneControl> bubbles = new ArrayList<>();
     private Random randomizer = new Random();
     private Stage stage = null;
 
@@ -57,9 +54,10 @@ public class BubbleFrame {
     }
 
     public void addBubble(String author,String text) {
+        PaneControl paneControl = new PaneControl();
 
         GridPane grid = new GridPane();
-        BubbleBurstHandler bubbleBurstHandler = new BubbleBurstHandler(this, grid);
+        BubbleBurstHandler bubbleBurstHandler = new BubbleBurstHandler(this, paneControl);
         grid.setPadding(new Insets(10, 10, 10, 10));
         grid.setMinHeight(300);
         grid.setMinWidth(150);
@@ -68,7 +66,6 @@ public class BubbleFrame {
 
         grid.setAlignment(Pos.TOP_LEFT);
         grid.getStyleClass().add("textured-shape");
-
 
         grid.setLayoutX(getRandomInt((int) (stage.getScene().getWidth()))/1.1);
         grid.setLayoutY(stage.getScene().getHeight());
@@ -94,29 +91,29 @@ public class BubbleFrame {
                 "-fx-background-color: coral; " +
                 "-fx-padding: 10px;");
 
-
-
-        grid.add(user,0,1);
-        grid.add(tweet,1,1);
-
-        bubbles.add(grid);
-
-        bubbles.add(grid);
+        grid.add(user,0,0);
+        grid.add(tweet,1,0);
+        paneControl.setUser(user);
+        paneControl.setTweet(tweet);
+        paneControl.setPanel(grid);
+        paneControl.setUserName(user.getText());
+        paneControl.setTweetText(tweet.getText());
+        bubbles.add(paneControl);
         group.getChildren().add(grid);
     }
 
     public void moveBubbles() {
-        for (GridPane bubble : bubbles) {
-            bubble.setLayoutY(bubble.getLayoutY() - 1);
+        for (PaneControl bubble : bubbles) {
+            bubble.getPanel().setLayoutY(bubble.getPanel().getLayoutY() - 1);
         }
     }
 
 
     public void removeBubbles() {
         List<GridPane> bubblesToBeRemoved = new ArrayList<>();
-        for (GridPane bubble : bubbles) {
-            if (bubble.getLayoutY() <= 10) {
-                group.getChildren().remove(bubble);
+        for (PaneControl bubble : bubbles) {
+            if (bubble.getPanel().getLayoutY() <= 10) {
+                group.getChildren().remove(bubble.getPanel());
             }
 
         }
@@ -124,8 +121,8 @@ public class BubbleFrame {
     }
 
     public boolean anyBubbleReachedOtherEnd() {
-        for (GridPane bubble : bubbles) {
-            if (bubble.getLayoutY() <= 10) {
+        for (PaneControl bubble : bubbles) {
+            if (bubble.getPanel().getLayoutY() <= 10) {
                 burstTheBubble(bubble);
                 return true;
             }
@@ -133,17 +130,42 @@ public class BubbleFrame {
         return false;
     }
 
-    public void removeBubble() {
-        for (GridPane bubble : bubbles) {
-            if (bubble.getLayoutY() <= 10) {
-                burstTheBubble(bubble);
-                break;
-            }
+    public void enlarge(PaneControl bubble) {
+        if(!bubble.isIncreased()) {
+            double h = bubble.getPanel().getHeight() * 2;
+            double w = bubble.getPanel().getWidth() * 2;
+            bubble.getPanel().setMinWidth(w);
+            bubble.getPanel().setMinHeight(h);
+            bubble.getPanel().setAlignment(Pos.CENTER);
+            Label user = new Label();
+            user.setText(bubble.getUserName());
+            user.setWrapText(true);
+            user.setMaxWidth(100);
+            user.setStyle("" +
+                    "-fx-background-radius: 10px;" +
+                    "-fx-background-color: cornflowerblue; " +
+                    "-fx-font: 15px Tahoma;"+
+                    "-fx-padding: 10px;");
+
+            Label tweet = new Label();
+            tweet.setMaxWidth(400);
+            tweet.setWrapText(true);
+            tweet.setText(bubble.getTweetText());
+            tweet.setStyle("" +
+                    "-fx-background-radius: 10px;" +
+                    "-fx-background-color: coral; " +
+                    "-fx-font: 25px Tahoma;"+
+                    "-fx-padding: 10px;");
+            bubble.getPanel().getChildren().remove(bubble.getUser());
+            bubble.getPanel().getChildren().remove(bubble.getTweet());
+            bubble.getPanel().add(user,0,0);
+            bubble.getPanel().add(tweet,1,0);
+            bubble.setIncreased(true);
         }
     }
 
-    public void burstTheBubble(final GridPane bubble) {
-        group.getChildren().remove(bubble);
+    public void burstTheBubble(PaneControl bubble) {
+        group.getChildren().remove(bubble.getPanel());
         bubbles.remove(bubble);
     }
 

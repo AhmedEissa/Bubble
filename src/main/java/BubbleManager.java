@@ -40,12 +40,10 @@ public class BubbleManager extends Timer {
         return new UIUpdateTimerTask() {
             @Override
             public void uiUpdate() {
-                if (!bubbleFrameController.isFreeze()) {
                     if (!bubbleFrame.anyBubbleReachedOtherEnd()) {
                         bubbleFrame.removeBubbles();
                         bubbleFrame.moveBubbles();
                     }
-                }
             }
         };
     }
@@ -54,7 +52,6 @@ public class BubbleManager extends Timer {
         return new UIUpdateTimerTask() {
             @Override
             public void uiUpdate() {
-                if (!bubbleFrameController.isFreeze()) {
                     if (bubbleFrame.getRandomInt(100) > 50) {
                         Status tweet;
                         synchronized(this) {
@@ -65,8 +62,6 @@ public class BubbleManager extends Timer {
                         bubbleFrame.addBubble("@" + tweet.getUser().getScreenName(),tweet.getText());
 
                     }
-                }
-
             }
         };
     }

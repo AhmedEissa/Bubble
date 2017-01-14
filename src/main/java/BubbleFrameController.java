@@ -15,7 +15,6 @@ import javafx.stage.WindowEvent;
 public class BubbleFrameController extends Application {
     private BubbleFrame bubbleFrame = null;
     private BubbleManager bubbleManager = null;
-    private volatile boolean freeze = true;
 
     public BubbleFrameController() {
 
@@ -43,7 +42,6 @@ public class BubbleFrameController extends Application {
         } else {
             bubbleFrame.clearBubbles();
         }
-        setFreeze(false);
 
     }
 
@@ -51,13 +49,6 @@ public class BubbleFrameController extends Application {
         return bubbleFrame;
     }
 
-    public boolean isFreeze() {
-        return freeze;
-    }
-
-    public void setFreeze(boolean freeze) {
-        this.freeze = freeze;
-    }
 
 
     public static void main(String[] args) {
